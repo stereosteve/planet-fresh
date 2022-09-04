@@ -1,21 +1,41 @@
 /** @jsx h */
 import { h } from "preact";
 import { tw } from "@twind";
-import Counter from "../islands/Counter.tsx";
+import { Head } from "$fresh/runtime.ts";
 
 export default function Home() {
   return (
     <div class={tw`p-4 mx-auto max-w-screen-md`}>
-      <img
-        src="/logo.svg"
-        height="100px"
-        alt="the fresh logo: a sliced lemon dripping with juice"
-      />
-      <p class={tw`my-6`}>
-        Welcome to `fresh`. Try updating this message in the ./routes/index.tsx
-        file, and refresh. asdf
-      </p>
-      <Counter start={3} />
+      <Head>
+        <title>Planet Fresh</title>
+      </Head>
+      <h1 class={tw`flex items-center text-2xl font-bold mt-8 mb-2`}>
+        <img
+          class={tw`mr-3`}
+          src="/logo.svg"
+          height="100px"
+          alt="the fresh logo: a sliced lemon dripping with juice"
+        />
+        Planet Fresh
+      </h1>
+
+      <p class={tw`text-lg leding-loose mb-8`}>A simple RSS feed aggregator</p>
+
+      <p class={tw`text-lg leding-loose mb-8`}>Examples:</p>
+
+      <a
+        href="/peeps"
+        class={tw`p-4 border-lg rounded-xl mt-4 bg-green-100 m-3`}
+      >
+        People
+      </a>
+
+      <a
+        href="/corps"
+        class={tw`p-4 border-lg rounded-xl mt-4 bg-green-100 m-3`}
+      >
+        Corporations
+      </a>
     </div>
   );
 }

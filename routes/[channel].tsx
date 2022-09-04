@@ -2,33 +2,40 @@
 import { h } from "preact";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { tw } from "@twind";
-import { fetchFeeds, sortedFeed } from "../utils/fetchFeeds.ts";
+import { entryTimestamp, fetchFeeds, sortedFeed } from "../utils/fetchFeeds.ts";
 import { FeedEntry } from "rss/src/types/mod.ts";
 import { Head } from "$fresh/runtime.ts";
 
-const peeps = [
-  "https://andrewkelley.me/rss.xml",
-  "https://justinjaffray.com/index.xml",
-  "https://notes.eatonphil.com/rss.xml",
-  "https://univalence.me/api/feed",
-  "https://www.gingerbill.org/article/index.xml",
-  "https://feeds.feedburner.com/martinkl",
-];
+const channels: Record<string, string[]> = {
+  peeps: [
+    "https://andrewkelley.me/rss.xml",
+    "https://justinjaffray.com/index.xml",
+    "https://notes.eatonphil.com/rss.xml",
+    // "https://univalence.me/api/feed",
+    "https://www.gingerbill.org/article/index.xml",
+    "https://feeds.feedburner.com/martinkl",
+    "https://www.complete.org/index.xml",
+    "https://jvns.ca/atom.xml",
+  ],
 
-const corps = [
-  "https://fly.io/blog/feed.xml",
-  "https://materialize.com/rss.xml",
-  "https://redpanda.com/rss.xml",
-  "https://deno.com/feed",
-  "http://rocksdb.org/feed.xml",
-];
-
-const feedUrls = peeps;
+  corps: [
+    "https://fly.io/blog/feed.xml",
+    "https://materialize.com/rss.xml",
+    "https://redpanda.com/rss.xml",
+    "https://deno.com/feed",
+    "http://rocksdb.org/feed.xml",
+    "https://duckdb.org/feed.xml",
+  ],
+};
 
 export const handler: Handlers<FeedEntry[]> = {
   async GET(req, ctx) {
+    const { channel } = ctx.params;
+    const feedUrls = channels[channel];
     const url = new URL(req.url);
-    console.log(url.searchParams);
+    console.log(channel, url.searchParams);
+
+    if (!feedUrls) return ctx.render();
 
     // maybe filter logic should be pushed down to fetchFeeds
     // so that this file can "Just" be UI
@@ -54,6 +61,9 @@ export default function Page({ data, params, url }: PageProps<FeedEntry[]>) {
       <Head>
         <title>Planet Fresh</title>
       </Head>
+      <div>
+        <a href="/">Home</a>
+      </div>
       <AppliedFilterUI url={url} />
       {data.map((entry) => (
         <EntryUI entry={entry} />
@@ -73,23 +83,25 @@ function AppliedFilterUI({ url }: { url: URL }) {
 }
 
 function EntryUI({ entry }: { entry: FeedEntry }) {
-  const href = entry.links[0].href;
+  const href = entry.links.map((l) => l.href).filter(Boolean)[0];
   if (!href) return null;
 
   const domain = new URL(href).host;
   return (
     <div>
       <ul>
-        <li className={tw`text-xl p-4`}>
-          <a href={entry.links[0].href} target="_blank">
-            {entry.title?.value}
+        <li className={tw`text-xl mx-8 my-5`}>
+          <a href={href}>
+            <b>{entry.title?.value}</b>
           </a>
-          <br />
-          <b>
-            <a href={`?domain=${encodeURIComponent(domain)}`}>{domain}</a>
-          </b>{" "}
-          &mdash;
-          <small> {entry.published?.toLocaleDateString()} ..</small>
+          <div class={tw`text-xs`}>
+            <a href={`?domain=${encodeURIComponent(domain)}`}>{domain} </a>
+            &middot;
+            <span class={tw`text-gray-500`}>
+              {" "}
+              {entryTimestamp(entry)?.toLocaleDateString()}{" "}
+            </span>
+          </div>
         </li>
       </ul>
     </div>
