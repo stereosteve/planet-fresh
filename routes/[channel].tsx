@@ -1,7 +1,4 @@
-/** @jsx h */
-import { h } from "preact";
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { tw } from "@twind";
 import { entryTimestamp, fetchFeeds, sortedFeed } from "../utils/fetchFeeds.ts";
 import { FeedEntry } from "rss/src/types/mod.ts";
 import { Head } from "$fresh/runtime.ts";
@@ -90,14 +87,14 @@ function EntryUI({ entry }: { entry: FeedEntry }) {
   return (
     <div>
       <ul>
-        <li className={tw`text-xl mx-8 my-5`}>
+        <li className="text-xl mx-8 my-5">
           <a href={href}>
             <b>{entry.title?.value}</b>
           </a>
-          <div class={tw`text-xs`}>
+          <div class="text-xs">
             <a href={`?domain=${encodeURIComponent(domain)}`}>{domain} </a>
             &middot;
-            <span class={tw`text-gray-500`}>
+            <span class="text-gray-500">
               {" "}
               {entryTimestamp(entry)?.toLocaleDateString()}{" "}
             </span>
